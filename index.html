@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whats Mensagge</title>
+</head>
+<body>
+    <h1>Enviar mensaje de WhatsApp</h1>
+    <form action="/" method="POST" autocomplete="off">
+      <label for="number">Número de teléfono:</label>
+      <input type="text" id="number" name="number" required><br>
+  
+      <label for="text">Mensaje:</label>
+      <input type="text" id="text" name="text" required><br>
+  
+      <button type="submit">Enviar mensaje</button>
+    </form>
+  
+    <div id="qr-container"></div>
+  
+    <script>
+      function checkClientReady() {
+  fetch('/ready')
+    .then(response => response.text())
+    .then(isReady => {
+      if (isReady === 'true') {
+        const qrContainer = document.getElementById('qr-container');
+        qrContainer.innerHTML = 'Cliente conectado correctamente.';
+      } else {
+        setTimeout(checkClientReady, 1000);
+      }
+    });
+}
+
+checkClientReady();
+
+document.getElementById('number').addEventListener('input', function() {
+  const numberInput = document.getElementById('number');
+  const phoneNumber = numberInput.value;
+  // Verificar si el número tiene 10 dígitos
+  if (phoneNumber.length === 10) {
+    const formattedNumber = '521' + phoneNumber + '@c.us';
+    numberInput.value = formattedNumber;
+  }
+});
+
+    </script>
+</body>
+</html>
