@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime');
+const mimeTypes = require('mime-types'); // Importa el módulo mime-types
 const fetch = require('node-fetch');
 const { URL } = require('url');
 
@@ -46,8 +46,8 @@ class MessageMedia {
      * @returns {MessageMedia}
      */
     static fromFilePath(filePath) {
-        const b64data = fs.readFileSync(filePath, {encoding: 'base64'});
-        const mimetype = mime.getType(filePath); 
+        const b64data = fs.readFileSync(filePath, { encoding: 'base64' });
+        const mimetype = mimeTypes.lookup(filePath); // Utiliza mimeTypes.lookup para obtener el tipo MIME
         const filename = path.basename(filePath);
 
         return new MessageMedia(mimetype, b64data, filename);
@@ -66,12 +66,12 @@ class MessageMedia {
      */
     static async fromUrl(url, options = {}) {
         const pUrl = new URL(url);
-        let mimetype = mime.getType(pUrl.pathname);
+        let mimetype = mimeTypes.lookup(pUrl.pathname);
 
         if (!mimetype && !options.unsafeMime)
             throw new Error('Unable to determine MIME type using URL. Set unsafeMime to true to download it anyway.');
 
-        async function fetchData (url, options) {
+        async function fetchData(url, options) {
             const reqOptions = Object.assign({ headers: { accept: 'image/* video/* text/* audio/*' } }, options);
             const response = await fetch(url, reqOptions);
             const mime = response.headers.get('Content-Type');
